@@ -33,8 +33,7 @@ or sex variable? The answer to both of these questions is: it depends. It depend
 we divided the data into subgroups on the passenger class. Then we would have three subgroups because there are three passenger classes in Titanic. If we had
 started dividing the data into subgroups on sex, and stopped there, then we would have only two subgroups because there are only two sexes in Titanic.
 
-A "leaf" is a better term and more in line with the decision tree analogy than the word "subgroup." Thus, I will use leaf and leaves to refer 
-to subgroups from now on.
+A "branch" or a "leaf" is better terms and more in line with the decision tree analogy than the word "subgroup." Thus, from now on, I will use "branch(es)" or "leaf(es)" to refer to subgroups. A leaf is a terminal branch.
 
 The number of leaves depends on how deep we want to go. If we want to go until the end, then the number of leaves is the product of the number of unique 
 values of each variable. Let us say we have 5 predictor variables, two of them are coded as yes/no, two of them have three unique values each (e.g., high,
@@ -43,11 +42,26 @@ medium, low), and one of them has five unique values (e.g., age 0-12, 13-18, 19-
 vairable.
 
 If we have ten dummy variables (e.g., yes/no) in our dataset, then the total number of leaves that we will have--if we decide to go until the end--is 1024.
-If we have 20 dummy variables, then we will have 1024 * 1204 leaves. It is neither practical nor necessary to have so many leaves in a decision tree. Thus, 
-we usually have fewer leaves than the possible maximum number of leaves. In that case, it matters whether we start dividing the dataset into subgroups (or, branching out leaves from the trunk) using this variable (e.g., passenger class) versus that variable (e.g., sex). So, how do we select the variable to split 
-the tree into branches, or a branch to sub-branches, or finally branches to leaves?
+If we have 20 dummy variables, then we will have 1024 * 1024 = 1,048,576 leaves. It is neither practical nor necessary to have so many leaves in a decision 
+tree. Thus, we usually have fewer leaves than the possible maximum number of leaves. In that case, it matters whether we start dividing the dataset into 
+subgroups (or, branching out leaves from the trunk) using this variable (e.g., passenger class) versus that variable (e.g., sex). So, how do we select the 
+variable to split the tree into branches, or a branch to sub-branches, or finally branches to leaves?
 
+There are methods to help us select the variable to split a tree/branch into sub-branches or leaves. But, before talking about that, let us think about the 
+leaves. Remember that each leave is also a decision rule. What kind of leaves do we want to have? Consider the following three leaves:
 
+Leaf 1: Passenger class = 1, sex = female, survived = 97%
+Leaf 2: Passenger class = 3, sex = female, survived = 50%
+Leaf 3: Passenger class = 3, sex = male, survived = 13%
+
+Which one of these leaves (or decision rules) is the most helpful?
+
+If I see a female passenger in the first class in the testing dataset, I can easily say that she probably survived (see Leaf 1). That is, the first leaf above 
+(the first decision rule) is very helpful. Likewise, if I see a male passenger in the third class in the testing dataset, I can easily say that he probebly died (see Leaf 3). Thus, the third leaf is also very helpful. However, if I see a female passenger in the third class, I cannot say whether she survived or died (see Leaf 2). The second leaf is not useful because it says that the passengers in this group have a 50% chance of survival. I can make the same prediction using the flip of a fair coin. We want to create leaves like the first and the third ones. We do not want leaves like the second one.
+
+The first and third leaves above have one thing in common. They are more homogenous regarding the dependent variable compared to the second leaf. That is, the passengers within these two leaves are similar to each other. The probability of two random passengers within the leaf to be similar to each other is high. On the other hand, the likelihood of two random passengers in the second leaf to be similar to each other is lower.   A statistical measure of this homogeneity/heterogeneity is called entropy. Higher entropy means higher heterogeneity. The formula for entropy is: 
+
+–(p * log(p)) –(q * log(q))
 
 
 

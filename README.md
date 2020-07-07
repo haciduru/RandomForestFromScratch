@@ -42,7 +42,36 @@ Leaf 2: -(.5 * log(.5)) -(.5 * log(.5)) = .69
 
 Leaf 3: -(.13 * log(.13)) -(.87 * log(.87)) = .39
 
-When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy and the weighed totals of the child branches' entropies. Below is an example of how we calculate information gain. 
+When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy and the weighed totals of the child branches' entropies. Below is an example of how we calculate information gain.
+
+In total, 38% of the Titanic passengers in the training dataset survived. Thus, the entropy value for the entire training dataset is (i.e., the parent branch):
+
+-(.38 * log(.38)) -(.62 * log(.62)) = .66
+
+If we split the data into three sub-branches on the passenger class variable, the sizes and entropy values of the branches will be:
+
+Branch 1:
+
+N = 216, 63% survived
+
+entropy = -(.63 * log(.63)) -(.37 * log(.37)) = .66
+
+Branch 2:
+
+N = 184, 47% survived
+
+entropy = -(.47 * log(.47)) -(.53 * log(.53)) = .69
+
+Branch 3:
+
+N = 491, 24% survided
+
+entropy = -(.24 * log(.24)) -(.76 * log(.76)) = .55
+
+
+
+
+
 
 
 

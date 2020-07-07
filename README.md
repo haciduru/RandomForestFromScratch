@@ -4,7 +4,7 @@ I appreciate all the excellent work and effort of people who have created machin
 
 I assume that everybody here knows what a random forest and what a decision tree is. If not, there are excellent tutorials out there that you can read (I am not sure if I can share their links here). Both random forests and decision trees are analytical tools that we use to solve classification problems. A forest is an aggregate of decision trees. Each tree in the forest makes a prediction and casts a vote based on that prediction. The forest aggregates the votes and makes the final decision. Thus, the real job is done by the decision tree. Here is how it happens.
 
-Let me use the Titanic data to illustrate my points. The problem that we want to solve is to predict who among the passengers survived and who died. We want to classify passengers into two groups: survived vs. died--survival is our dependent (or outcome) variable. We will group passengers into survived vs. dead categories based on their characteristics, such as male vs. female, young vs. old, rich vs. poor, and et cetera. These characteristics are called the independent (or predictor) variables.
+Let me use the Titanic data to illustrate my points. The problem that we want to solve is to predict who among the passengers survived and who died. We want to classify passengers into two groups: survived vs. died--survival is our dependent (or outcome) variable. We will group passengers into survived vs. dead categories based on their characteristics, such as male vs. female, young vs. old, rich vs. poor, and et cetera. These features are called the independent (or predictor) variables.
 
 A decision tree, iteratively, divides the data into subgroups on the independent variables and calculates the likelihood of survival (in Titanic example) for each sub-group. Let us say we have information on only two of the passengers' characteristics in Titanic, (1) passenger class, and (2) sex. The algorithm divides the sample into subgroups on one of these characteristics first (e.g., passenger class), and then it divides each subgroup into smaller subgroups based on the other feature. Then, it calculates the proportion (i.e., probability) of passengers who survived in each subgroup.
 
@@ -42,7 +42,7 @@ Leaf 2: -(.5 * log(.5)) -(.5 * log(.5)) = .69
 
 Leaf 3: -(.13 * log(.13)) -(.87 * log(.87)) = .39
 
-When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy and the weighed totals of the child branches' entropies. Below is an example of how we calculate information gain.
+When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy value and the weighted totals of the child branches' entropy values. Below is an example of how we calculate information gain.
 
 In total, 38% of the Titanic passengers in the training dataset survived. Thus, the entropy value for the entire training dataset is (i.e., the parent branch):
 
@@ -68,6 +68,15 @@ N = 491, 24% survided
 
 entropy = -(.24 * log(.24)) -(.76 * log(.76)) = .55
 
+Information gain = .66 - ( (216/891 * .66) + (184/891 * .69) + (491/891 * .55)) = .05
+
+Note that we weighted the sub-branches' entropy values by multiplying them with the proportion of passengers in each branch. For example, we multiplied the entropy value of Branch 1 by 216/891, because 216 of the 891 passengers were in this sub-branch (i.e., passenger class = 1).
+
+If we split the entire training dataset into branches on the passenger class variable, the amount of information that we will gain will be .05. If we split the entire training dataset into branches on sex, the amount of information that we will gain will be -.11. We will lose rather than gain information if we create branches by splitting the data on passenger sex.
+
+Remember the two questions that I asked above. How many subgroups are there in a decision tree? And does it matter whether we start dividing the data into subgroups using the passenger class variable or sex variable? It depends. If we are going to split the data until there is no way to split, i.e., we want to create the maximum number of leaves possible, then it does not matter whether we start with this or that variable. It is neither practical nor necessary to create the maximum number of leaves possible. Moreover, if we create too many leaves, we will probably overfit the data to the training set, and our tree will not perform well in the testing set. Thus, we do not want to create many leaves. We want to create a few (no more than enough) leaves. Therefore, we use the information gain measure to decide which variables we will use to create new branches.
+
+When we calculated the information gain, we weighted the entropy values of child branches by their size. Why? The logic is very simple; splitting larger branches affects more cases than splitting smaller branches. Thus, it is assumed that the information gained by splitting a large branch will be larger than the information gained by splitting a smaller one, even if the entropy values of those two branches are the same. That makes sense, right?
 
 
 

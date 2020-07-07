@@ -34,9 +34,6 @@ entropy = –(p * log(p)) –(q * log(q))
 
 According to this formula, the above three leaves have the following values of entropy:
 
-Leaf 1: -(.97 * log(.97)) -(.03 * log(.03)) = .13
-Leaf 2: -(.5 * log(.5)) -(.5 * log(.5)) = .69
-Leaf 3: -(.13 * log(.13)) -(.87 * log(.87)) = .39
 
 When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy and the weighed totals of the child branches' entropies. Below is an example of how we calculate information gain. 
 

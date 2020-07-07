@@ -42,11 +42,10 @@ medium, low), and one of them has five unique values (e.g., age 0-12, 13-18, 19-
 3 * 4 = 144 leaves if we go until the end. We usually have more than five variables and the number of leaves increases exponentially with each additional
 vairable.
 
-If we have ten dummy variables (e.g., yes/no) in our dataset, then the total number of leaves that we will have is 1024. If we have 20 dummy variables, 
-then we will have 1024 * 1204 leaves. It is neither practical nor necessary to have so many leaves in a decision tree. Thus, we usually have fewer leaves
-than the possible maximum number of leaves. In that case, it matters whether we start dividing the dataset into subgroups (or, branching out leaves from 
-the trunk) using this variable (e.g., passenger class) versus that variable (e.g., sex). So, how do we select the variable to split the tree into branches, 
-or a branch to sub-branches, or finally branches to leaves?
+If we have ten dummy variables (e.g., yes/no) in our dataset, then the total number of leaves that we will have--if we decide to go until the end--is 1024.
+If we have 20 dummy variables, then we will have 1024 * 1204 leaves. It is neither practical nor necessary to have so many leaves in a decision tree. Thus, 
+we usually have fewer leaves than the possible maximum number of leaves. In that case, it matters whether we start dividing the dataset into subgroups (or, branching out leaves from the trunk) using this variable (e.g., passenger class) versus that variable (e.g., sex). So, how do we select the variable to split 
+the tree into branches, or a branch to sub-branches, or finally branches to leaves?
 
 
 

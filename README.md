@@ -21,7 +21,9 @@ If we have ten dummy variables (e.g., yes/no) in our dataset, then the total num
 There are methods to help us select the variable to split a tree/branch into sub-branches or leaves. But, before talking about that, let us think about the leaves. Remember that each leave is also a decision rule. What kind of leaves do we want to have? Consider the following three leaves:
 
 Leaf 1: Passenger class = 1, sex = female, survived = 97%
+
 Leaf 2: Passenger class = 3, sex = female, survived = 50%
+
 Leaf 3: Passenger class = 3, sex = male, survived = 13%
 
 Which one of these leaves (or decision rules) is the most helpful?
@@ -34,6 +36,11 @@ entropy = –(p * log(p)) –(q * log(q))
 
 According to this formula, the above three leaves have the following values of entropy:
 
+Leaf 1: -(.97 * log(.97)) -(.03 * log(.03)) = .13
+
+Leaf 2: -(.5 * log(.5)) -(.5 * log(.5)) = .69
+
+Leaf 3: -(.13 * log(.13)) -(.87 * log(.87)) = .39
 
 When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy and the weighed totals of the child branches' entropies. Below is an example of how we calculate information gain. 
 

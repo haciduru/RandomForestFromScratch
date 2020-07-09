@@ -1,86 +1,112 @@
 # RandomForestFromScratch
 
-I appreciate all the excellent work and effort of people who have created machine learning libraries such as SciKit Learn, PyTorch, et cetera. However, I still do not like to use other people's codes until I know what is going on in the background. Therefore, I usually implement my own tools as a learning experience and really understand the logic and the mechanism of machine learning. Here, I will present my own random forest and decision tree codes that I used to predict survival in Titanic data.
+Random-Forest-From-Scratch
+I appreciate all the excellent work and effort of people who have created machine learning libraries such as SciKit Learn, PyTorch, et cetera. However, I still don't like to use other people's codes until I know what is going on in the background. Therefore, I usually implement my own tools as a learning experience and also to understand the logic and the mechanism of machine learning. Here, I will present my own random forest and decision tree models that I used to predict survival in Titanic data.
 
-I assume that everybody here knows what a random forest and what a decision tree is. If not, there are excellent tutorials out there that you can read (I am not sure if I can share their links here). Both random forests and decision trees are analytical tools that we use to solve classification problems. A forest is an aggregate of decision trees. Each tree in the forest makes a prediction and casts a vote based on that prediction. The forest aggregates the votes and makes the final decision. Thus, the real job is done by the decision tree. Here is how it happens.
+I assume everybody here has a basic understanding of random forests and decision trees. Both random forests and decision trees are analytical tools that we use to solve classification problems. A forest is an aggregate of decision trees. Each tree in the forest makes a prediction and casts a vote based on that prediction. The forest aggregates the votes and makes the final decision. Thus, the real job is done by the decision tree. But, what is a decision tree?
 
-Let me use the Titanic data to illustrate my points. The problem that we want to solve is to predict who among the passengers survived and who died. We want to classify passengers into two groups: survived vs. died--survival is our dependent (or outcome) variable. We will group passengers into survived vs. dead categories based on their characteristics, such as male vs. female, young vs. old, rich vs. poor, and et cetera. These features are called the independent (or predictor) variables.
+A decision tree is a map of the training dataset that looks just like a tree; it has branches and leaves. Leaves hang on branches. Actually, we can call leaves terminal branches. Leaves are also sets of decision rules. We make predictions about the testing dataset using those rules. Then, growing a decision tree is essentially creating sets of rules that can be used to make predictions. In this text, I will explain how you can grow a decision tree using the Titanic Disaster Dataset. I will upload a copy of Titanic Disaster data to this repository if I can.
 
-A decision tree, iteratively, divides the data into subgroups on the independent variables and calculates the likelihood of survival (in Titanic example) for each sub-group. Let us say we have information on only two of the passengers' characteristics in Titanic, (1) passenger class, and (2) sex. The algorithm divides the sample into subgroups on one of these characteristics first (e.g., passenger class), and then it divides each subgroup into smaller subgroups based on the other feature. Then, it calculates the proportion (i.e., probability) of passengers who survived in each subgroup.
+In the Titanic case, we want to predict who among the passengers would survive and who would die. Thus, survival is our outcome (or dependent) variable. We make that prediction using the passengers' characteristics, such as their sex, age, passenger class, fare, et cetera. These characteristics are called the predictor (or independent) variables.
 
-A decision tree is a set of rules. Each subgroup is a decision rule. When we create a decision tree, we create a set of rules from a training dataset. Then, we use those rules to predict the outcome variable in a testing dataset. For example, We can create the following subgroup using Titanic data: passenger class = 1, sex = female. Ninety-seven percent of the passengers in this subgroup survived. The rule for this subgroup is: when you see a passenger from this subgroup in the testing dataset, classify that passenger as "survived." Why, because the likelihood of survival is very high. Or, we can create the following rule which is more precise: Classify 97% of the passengers in this subgroup in the testing dataset as survived and classify 3% of them died.
+# Growing a decision tree
 
-How many subgroups are there in a decision tree? And does it matter whether we start dividing the data into subgroups using the passenger class variable or sex variable? The answer to both of these questions is: it depends. It depends on how deep you want to go. In our example, we could have stopped when we divided the data into subgroups on the passenger class. Then we would have three subgroups because there are three passenger classes in Titanic. If we had started dividing the data into subgroups on sex, and stopped there, then we would have only two subgroups because there are only two sexes in Titanic.
+While growing a decision tree, we, iteratively, split the data into subsets based on the independent variables. The collection of subsets after the final iteration is the leaves of the tree. We use those leaves (i.e., decision rules) to make our predictions. Here is how it happens. Let's assume that we only have information on two of the independent variables: (1) passenger class and (2) sex. We can split the data into two subsets using one of these two variables--say, we do that using the passenger class. If we do that, we will have the following three new branches, because there are three passenger classes in Titanic.
 
-A "branch" or a "leaf" is better terms and more in line with the decision tree analogy than the word "subgroup." Thus, from now on, I will use "branch(es)" or "leaf(es)" to refer to subgroups. A leaf is a terminal branch.
+Branch 1: passenger class = 1, N = 216
 
-The number of leaves depends on how deep we want to go. If we want to go until the end, then the number of leaves is the product of the number of unique values of each variable. Let us say we have 5 predictor variables, two of them are coded as yes/no, two of them have three unique values each (e.g., high, medium, low), and one of them has five unique values (e.g., age 0-12, 13-18, 19-32, 33-45, 46+). In this case, we will have a total number of 2 * 2 * 3 * 3 * 4 = 144 leaves if we go until the end. We usually have more than five variables and the number of leaves increases exponentially with each additional vairable.
+Branch 1: passenger class = 2, N = 184
 
-If we have ten dummy variables (e.g., yes/no) in our dataset, then the total number of leaves that we will have--if we decide to go until the end--is 1024. If we have 20 dummy variables, then we will have 1024 * 1024 = 1,048,576 leaves. It is neither practical nor necessary to have so many leaves in a decision tree. Thus, we usually have fewer leaves than the possible maximum number of leaves. In that case, it matters whether we start dividing the dataset into subgroups (or, branching out leaves from the trunk) using this variable (e.g., passenger class) versus that variable (e.g., sex). So, how do we select the variable to split the tree into branches, or a branch to sub-branches, or finally branches to leaves?
+Branch 3: passenger class = 3, N = 491
 
-There are methods to help us select the variable to split a tree/branch into sub-branches or leaves. But, before talking about that, let us think about the leaves. Remember that each leave is also a decision rule. What kind of leaves do we want to have? Consider the following three leaves:
+Then we can split these branches into subsets using the sex variable. Since this is the final iteration, the collection of subsets after this iteration will be the leaves of our tree. Note that we don't have to split all three of the branches. Finally, we calculate the proportion of passengers who survived in each leaf. Here are the leaves:
 
-Leaf 1: Passenger class = 1, sex = female, survived = 97%
+Leaf 1: passenger class = 1, sex = female, N = 94, 97% survived
 
-Leaf 2: Passenger class = 3, sex = female, survived = 50%
+Leaf 2: passenger class = 2, sex = female, N = 76, 92% survived
 
-Leaf 3: Passenger class = 3, sex = male, survived = 13%
+Leaf 3: passenger class = 3, sex = female, N = 144, 50% survived
+
+Leaf 4: passenger class = 1, sex = male, N = 122, 37% survived
+
+Leaf 5: passenger class = 2, sex = male, N = 108, 16% survived
+
+Leaf 6: passenger class = 3, sex = male, N = 347, 14% survived
+
+We create these rules using the training data. We use them to make predictions in the testing data. Here are the rules for each leaf:
+
+Decision rule 1: if the passenger is in passenger class 1 and is a female, then the prediction = survived
+
+Decision rule 2: if the passenger is in passenger class 2 and is a female, then the prediction = survived
+
+Decision rule 3: if the passenger is in passenger class 3 and is a female, then the prediction = ?
+
+Decision rule 4: if the passenger is in passenger class 1 and is a male, then the prediction = died
+
+Decision rule 5: if the passenger is in passenger class 2 and is a male, then the prediction = died
+
+Decision rule 6: if the passenger is in passenger class 3 and is a male, then the prediction = died
+
+Here are two important questions to answer. How many leaves (i.e., decision rules) should we create? And, does it matter whether we start splitting the data into branches using variable A vs. variable B, for example, passenger class versus sex in the Titanic example. The answer to both of these questions is: it depends. It depends on how deep you want to go.
+
+In our example, there are only two variables (passenger class and sex). There are three unique values in passenger class and two unique values in sex. Thus, the maximum number of leaves that we can create is six. Because six is a small number, we can go until the end and create all six of the leaves. If this is the case, it does not matter whether we start splitting the data using passenger class or sex. What if we had more than two variables? For example, if we had five variables, two of them coded as yes/no, two of them with three unique values each (e.g., high, medium, low), and one of them with five unique values (e.g., age 0-12, 13-18, 19-32, 33-45, 46+). In that case, the maximum number of leaves we could create would be 2 2 3 3 4 = 144.
+
+We usually have more than five variables, and the maximum number of leaves that we can create increases exponentially with each additional variable. If we have ten variables with two unique values each (e.g., yes/no), the maximum number of leaves we can create is 2^10 = 1,024. It is neither practical nor necessary to create that many leaves. And when we don't create all possible leaves, it matters whether we start splitting the data using variable A vs. variable B. Then, the question becomes, how do we decide where to start? Also, how to decide which variable to use to split the data at each step?
+
+There are methods that help us make that decision. But, before talking about that, let's think about the leaves. Remember that each leave is also a decision rule. What kind of leaves do we want to have? Consider the following three leaves:
+
+Leaf 1: Passenger class = 1, sex = female, N = 94, 97% survived
+
+Leaf 2: Passenger class = 3, sex = female, N = 144, 50% survived
+
+Leaf 3: Passenger class = 3, sex = male, N = 347, 13% survived
 
 Which one of these leaves (or decision rules) is the most helpful?
 
-If I see a female passenger in the first class in the testing dataset, I can easily say that she probably survived (see Leaf 1). That is, the first leaf above (the first decision rule) is very helpful. Likewise, if I see a male passenger in the third class in the testing dataset, I can easily say that he probebly died (see Leaf 3). Thus, the third leaf is also very helpful. However, if I see a female passenger in the third class, I cannot say whether she survived or died (see Leaf 2). The second leaf is not useful because it says that the passengers in this group have a 50% chance of survival. I can make the same prediction using the flip of a fair coin. We want to create leaves like the first and the third ones. We do not want leaves like the second one.
+If I see a female passenger in passenger class 1 in the testing set, I can easily say that she probably survived (see Leaf 1). That is, the first leaf above (the first decision rule) is very helpful. Likewise, if I see a male passenger in passenger class 3 in the testing set, I can easily say that he probably died (see Leaf 3). Thus, the third leaf is also very helpful. However, if I see a female passenger in passenger class 3, I cannot say whether she survived or died (see Leaf 2). The second leaf is not helpful because it says that the passengers in this group have a 50% chance of survival. I can make the same prediction using the flip of a fair coin. We want to create leaves like the first and the third ones. We do not want leaves like the second one.
 
-The first and third leaves above have one thing in common. They are more homogenous regarding the dependent variable compared to the second leaf. That is, the passengers within these two leaves are similar to each other. The probability of two random passengers within the leaf to be similar to each other is high. On the other hand, the likelihood of two random passengers in the second leaf to be similar to each other is lower.   A statistical measure of this homogeneity/heterogeneity is called entropy. Higher entropy means higher heterogeneity. The formula for entropy is: 
+# Entropy
 
-entropy = –(p * log(p)) –(q * log(q))
+The first and third leaves above have one thing in common. They are more homogenous regarding the dependent variable compared to the second leaf. That is, the passengers within these two leaves are similar to each other. The probability of two random passengers within either of these leaves to be similar to each other is high. On the other hand, the likelihood of two random passengers in the second leaf to be similar to each other is lower. A measure of this homogeneity/heterogeneity is called entropy. Higher entropy means higher heterogeneity. The formula for entropy is:
 
-According to this formula, the above three leaves have the following values of entropy:
+entropy = –(p log2(p)) –(q log2(q))
 
-Leaf 1: -(.97 * log(.97)) -(.03 * log(.03)) = .13
+Int this formula, for the Titanic case, p is the proportion of passengers who survived and is the proportion of passengers who died (q = 1 - p).
 
-Leaf 2: -(.5 * log(.5)) -(.5 * log(.5)) = .69
+According to this formula, the above three leaves have the following entropy values:
 
-Leaf 3: -(.13 * log(.13)) -(.87 * log(.87)) = .39
+Leaf 1: -(.97 log2(.97)) -(.03 log2(.03)) = .19
+
+Leaf 2: -(.5 log2(.5)) -(.5 log2(.5)) = .1
+
+Leaf 3: -(.13 log2(.13)) -(.87 log2(.87)) = .56
+
+# Information gain
 
 When we split branches into sub-branches or leaves, we try to do that in such a way that the new branches/leaves have low entropy. The goal is to have leaves that have the lowest possible entropy. Another measure that we use to achieve this goal is "information gain." Information gain is the difference between the parent branch's entropy value and the weighted totals of the child branches' entropy values. Below is an example of how we calculate information gain.
 
-In total, 38% of the Titanic passengers in the training dataset survived. Thus, the entropy value for the entire training dataset is (i.e., the parent branch):
+In total, 38% of the Titanic passengers in the training set survived. Thus, the entropy value for the entire training set is:
 
--(.38 * log(.38)) -(.62 * log(.62)) = .66
+-(.38 log2(.38)) -(.62 log2(.62)) = .96
 
 If we split the data into three sub-branches on the passenger class variable, the sizes and entropy values of the branches will be:
 
-Branch 1:
+Branch 1: N = 216, 63% survived, entropy = -(.63 log2(.63)) -(.37 log2(.37)) = .95
 
-N = 216, 63% survived
+Branch 2: N = 184, 47% survived, entropy = -(.47 log2(.47)) -(.53 log2(.53)) = .98
 
-entropy = -(.63 * log(.63)) -(.37 * log(.37)) = .66
+Branch 3: N = 491, 24% survided, entropy = -(.24 log2(.24)) -(.76 log2(.76)) = .80
 
-Branch 2:
+Here, the entire training set is the parent branch and branches 1-3 are children branches.
 
-N = 184, 47% survived
+Information gain = .96 - ( (216/891 .95) + (184/891 .98) + (491/891 * .80)) = .09
 
-entropy = -(.47 * log(.47)) -(.53 * log(.53)) = .69
+Note that we weighted the child branches' entropy values by multiplying them with the proportion of passengers in each branch. For example, we multiplied the entropy value of Branch 1 by 216/891, because 216 of the 891 passengers were in this sub-branch (i.e., passenger class = 1).
 
-Branch 3:
+If we split the entire training dataset into branches on the passenger class variable, the amount of information that we will gain will be .09. What would the information gain be if we decided to split the training set into branches using the sex variable? You can calculate the information gain as an exercise here.
 
-N = 491, 24% survided
+Remember the two questions that I asked above. First, how many leaves (i.e., decision rules) should we create? Second, does it matter whether we start splitting the data into branches using this variable vs. that variable (e.g., passenger class vs. sex)? It depends. If we are going to split the data until there are no more splits, i.e., we want to create the maximum number of leaves possible, then it does not matter whether we start with this or that variable. However, it is neither practical nor necessary to create the maximum number of leaves possible. Moreover, if we create too many leaves, we will probably overfit the data to the training set, and our tree will not perform well in the testing set. Thus, we do not want to create many leaves. We want to create a few leaves--no more than enough. Therefore, we use the information gain measure to decide which variables we will use to create new branches. We split each branch into sub-branches using the variable that produces the highest information gain.
 
-entropy = -(.24 * log(.24)) -(.76 * log(.76)) = .55
+When we calculated the information gain above, we weighted the entropy values of child branches by their size. Why? The logic is very simple; there are more cases in larger branches. That makes sense, right?
 
-Information gain = .66 - ( (216/891 * .66) + (184/891 * .69) + (491/891 * .55)) = .05
-
-Note that we weighted the sub-branches' entropy values by multiplying them with the proportion of passengers in each branch. For example, we multiplied the entropy value of Branch 1 by 216/891, because 216 of the 891 passengers were in this sub-branch (i.e., passenger class = 1).
-
-If we split the entire training dataset into branches on the passenger class variable, the amount of information that we will gain will be .05. If we split the entire training dataset into branches on sex, the amount of information that we will gain will be -.11. We will lose rather than gain information if we create branches by splitting the data on passenger sex.
-
-Remember the two questions that I asked above. How many subgroups are there in a decision tree? And does it matter whether we start dividing the data into subgroups using the passenger class variable or sex variable? It depends. If we are going to split the data until there is no way to split, i.e., we want to create the maximum number of leaves possible, then it does not matter whether we start with this or that variable. It is neither practical nor necessary to create the maximum number of leaves possible. Moreover, if we create too many leaves, we will probably overfit the data to the training set, and our tree will not perform well in the testing set. Thus, we do not want to create many leaves. We want to create a few (no more than enough) leaves. Therefore, we use the information gain measure to decide which variables we will use to create new branches.
-
-When we calculated the information gain, we weighted the entropy values of child branches by their size. Why? The logic is very simple; splitting larger branches affects more cases than splitting smaller branches. Thus, it is assumed that the information gained by splitting a large branch will be larger than the information gained by splitting a smaller one, even if the entropy values of those two branches are the same. That makes sense, right?
-
-
-
-
-
-
-
+Entropy and information gain are the most fundamental ideas about decision trees. If you know what they are, then you know what a decision tree is. All the rest is a coding practice. In this repository, you will find functions that to grow decision trees and random forests.

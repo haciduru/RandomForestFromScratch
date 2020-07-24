@@ -1,4 +1,5 @@
 Random-Forest-From-Scratch
+
 I appreciate all the excellent work and effort of people who have created machine learning libraries such as SciKit Learn, PyTorch, et cetera. However, I still don't like to use other people's codes until I know what is going on in the background. Therefore, I usually implement my own tools as a learning experience and also to understand the logic and the mechanism of machine learning. Here, I will present my own random forest and decision tree models that I used to predict survival in Titanic data.
 
 I assume that everybody here knows what a random forest and what a decision tree is. If not, there are excellent tutorials out there that you can read (I am not sure if I can share their links here). Both random forests and decision trees are analytical tools that we use to solve classification problems. A forest is an aggregate of decision trees. Each tree in the forest makes a prediction and casts a vote based on that prediction. The forest aggregates the votes and makes the final decision. Thus, the real job is done by the decision tree. But, what is a decision tree?
